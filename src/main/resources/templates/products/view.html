@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${product.name})}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <!-- Навигация -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/products}">Товары</a></li>
+                <li class="breadcrumb-item active" th:text="${product.name}">Товар</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <!-- Изображение товара -->
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body text-center py-5 bg-light">
+                        <i class="bi bi-box-seam display-1 text-primary"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Информация о товаре -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0" th:text="${product.name}">Название товара</h4>
+                        <div sec:authorize="hasAnyRole('MANAGER', 'ADMIN')">
+                            <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil me-1"></i>Редактировать
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Цена и наличие -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h2 class="text-primary fw-bold" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</h2>
+                                <span class="text-muted">за <span th:text="${product.unit}">шт.</span></span>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <span class="badge fs-6" th:classappend="${product.available} ? 'bg-success' : 'bg-secondary'"
+                                      th:text="${product.available} ? 'Доступен' : 'Недоступен'">Статус</span>
+                                <div class="mt-2">
+                                    <span class="badge" th:classappend="${product.inStock} ? 'bg-info' : 'bg-danger'"
+                                          th:text="${product.inStock} ? 'В наличии: ' + ${product.quantity} + ' ' + ${product.unit} : 'Нет в наличии'">Наличие</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Описание -->
+                        <div class="mb-4" th:if="${product.description}">
+                            <h6 class="text-muted">Описание</h6>
+                            <p th:text="${product.description}">Описание товара</p>
+                        </div>
+
+                        <!-- Характеристики -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-muted">Категория</td>
+                                            <td>
+                                                <a th:if="${product.category}" 
+                                                   th:href="@{/categories/view/{id}(id=${product.category.id})}"
+                                                   th:text="${product.category.name}">Категория</a>
+                                                <span th:unless="${product.category}">-</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Поставщик</td>
+                                            <td th:text="${product.supplier?.companyName ?: '-'}">Поставщик</td>
+                                        </tr>
+                                        <tr th:if="${product.barcode}">
+                                            <td class="text-muted">Штрих-код</td>
+                                            <td th:text="${product.barcode}">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr th:if="${product.manufactureDate}">
+                                            <td class="text-muted">Дата производства</td>
+                                            <td th:text="${#temporals.format(product.manufactureDate, 'dd.MM.yyyy')}">-</td>
+                                        </tr>
+                                        <tr th:if="${product.expirationDate}">
+                                            <td class="text-muted">Срок годности до</td>
+                                            <td>
+                                                <span th:classappend="${product.expired} ? 'text-danger fw-bold' : (${product.expiringSoon} ? 'text-warning fw-bold' : '')"
+                                                      th:text="${#temporals.format(product.expirationDate, 'dd.MM.yyyy')}">-</span>
+                                                <span th:if="${product.expired}" class="badge bg-danger ms-1">Просрочен!</span>
+                                                <span th:if="${product.expiringSoon}" class="badge bg-warning ms-1">Скоро истекает</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Добавлен</td>
+                                            <td th:text="${#temporals.format(product.createdAt, 'dd.MM.yyyy HH:mm')}">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопки действий -->
+        <div class="d-flex justify-content-between mt-4">
+            <a th:href="@{/products}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Назад к списку
+            </a>
+            <div sec:authorize="hasAnyRole('MANAGER', 'ADMIN')">
+                <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-warning me-2">
+                    <i class="bi bi-pencil me-2"></i>Редактировать
+                </a>
+                <form th:action="@{/products/delete/{id}(id=${product.id})}" method="post" class="d-inline"
+                      onsubmit="return confirm('Вы уверены, что хотите удалить этот товар?');">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Удалить
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

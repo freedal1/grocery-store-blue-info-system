@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Категории товаров')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold" style="color: #1f2937;"><i class="bi bi-tags me-2" style="color: #6366f1;"></i>Категории товаров</h2>
+                <p style="color: #6b7280;" class="mb-0">Всего категорий: <span th:text="${categories.totalElements}">0</span></p>
+            </div>
+            <div sec:authorize="hasAnyRole('MANAGER', 'ADMIN')">
+                <a th:href="@{/categories/new}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-2"></i>Добавить категорию
+                </a>
+            </div>
+        </div>
+
+        <!-- Сообщения -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i><span th:text="${success}">Успех</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i><span th:text="${error}">Ошибка</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Поиск -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/categories}" method="get" class="row g-3">
+                    <div class="col-md-10">
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="text" class="form-control" name="search" placeholder="Поиск категории..."
+                                   th:value="${currentSearch}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search me-1"></i>Найти
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Карточки категорий -->
+        <div class="row g-4">
+            <div class="col-md-4" th:each="category : ${categories}">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="bi bi-folder2 display-4 mb-3" style="color: #6366f1;"></i>
+                        <h5 class="card-title" th:text="${category.name}">Категория</h5>
+                        <p class="card-text text-muted small" th:text="${category.description ?: 'Без описания'}">Описание</p>
+                        <span class="badge bg-info" th:text="${category.productCount} + ' товаров'">0 товаров</span>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/categories/view/{id}(id=${category.id})}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye me-1"></i>Товары
+                            </a>
+                            <div sec:authorize="hasAnyRole('MANAGER', 'ADMIN')">
+                                <a th:href="@{/categories/edit/{id}(id=${category.id})}" class="btn btn-outline-warning btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/categories/delete/{id}(id=${category.id})}" method="post" class="d-inline"
+                                      onsubmit="return confirm('Удалить категорию? Это возможно только если в ней нет товаров.');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${categories.totalElements == 0}" class="col-12 text-center py-5">
+                <i class="bi bi-folder-x display-1 text-muted mb-3 d-block"></i>
+                <p class="text-muted">Категории не найдены</p>
+            </div>
+        </div>
+
+        <!-- Пагинация -->
+        <nav th:if="${categories.totalPages > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${categories.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/categories(page=${categories.number - 1}, search=${currentSearch})}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(0, categories.totalPages - 1)}" 
+                    class="page-item" th:classappend="${i == categories.number} ? 'active'">
+                    <a class="page-link" th:href="@{/categories(page=${i}, search=${currentSearch})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${categories.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/categories(page=${categories.number + 1}, search=${currentSearch})}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

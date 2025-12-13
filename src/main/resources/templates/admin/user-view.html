@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Пользователь - ' + ${user.fullName})}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/admin}">Администрирование</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/admin/users}">Пользователи</a></li>
+                <li class="breadcrumb-item active" th:text="${user.fullName}">Пользователь</li>
+            </ol>
+        </nav>
+
+        <!-- Сообщения -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i><span th:text="${success}">Успех</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i><span th:text="${error}">Ошибка</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row">
+            <!-- Информация о пользователе -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="bi bi-person me-2"></i><span th:text="${user.fullName}">Имя</span></h4>
+                        <span class="badge" th:classappend="${user.enabled} ? 'bg-success' : 'bg-secondary'"
+                              th:text="${user.enabled} ? 'Активен' : 'Заблокирован'">Статус</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-muted">ID</td>
+                                            <td th:text="${user.id}">1</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Логин</td>
+                                            <td th:text="${user.username}">username</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Email</td>
+                                            <td th:text="${user.email}">email@mail.com</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Телефон</td>
+                                            <td th:text="${user.phone ?: '-'}">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-muted">Текущая роль</td>
+                                            <td>
+                                                <span class="badge badge-role"
+                                                      th:classappend="${user.role.name() == 'ADMIN'} ? 'badge-admin' : 
+                                                                    (${user.role.name() == 'MANAGER'} ? 'badge-manager' : 
+                                                                    (${user.role.name() == 'SELLER'} ? 'badge-seller' : 'badge-customer'))"
+                                                      th:text="${user.role.displayName}">Роль</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Регистрация</td>
+                                            <td th:text="${#temporals.format(user.createdAt, 'dd.MM.yyyy HH:mm')}">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Обновлено</td>
+                                            <td th:text="${#temporals.format(user.updatedAt, 'dd.MM.yyyy HH:mm')}">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${user.address}" class="mt-3">
+                            <h6 class="text-muted">Адрес</h6>
+                            <p th:text="${user.address}">Адрес</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Управление -->
+            <div class="col-lg-4">
+                <!-- Изменение роли -->
+                <div class="card mb-4">
+                    <div class="card-header bg-danger text-white">
+                        <i class="bi bi-shield-lock me-2"></i>Изменение роли
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Выберите роль</label>
+                                <select class="form-select" name="role">
+                                    <option th:each="r : ${roles}" th:value="${r.name()}" th:text="${r.displayName}"
+                                            th:selected="${r == user.role}">Роль</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="bi bi-check-lg me-2"></i>Изменить роль
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Блокировка -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-lock me-2"></i>Управление доступом
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/users/{id}/toggle-enabled(id=${user.id})}" method="post">
+                            <button type="submit" class="btn w-100" 
+                                    th:classappend="${user.enabled} ? 'btn-warning' : 'btn-success'">
+                                <i class="bi" th:classappend="${user.enabled} ? 'bi-lock' : 'bi-unlock'"></i>
+                                <span th:text="${user.enabled} ? 'Заблокировать' : 'Разблокировать'">Действие</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Удаление -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-trash me-2"></i>Удаление
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post"
+                              onsubmit="return confirm('Вы уверены, что хотите удалить этого пользователя? Это действие необратимо.');">
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="bi bi-trash me-2"></i>Удалить пользователя
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a th:href="@{/admin/users}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>К списку пользователей
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${category.name})}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/categories}">Категории</a></li>
+                <li class="breadcrumb-item active" th:text="${category.name}">Категория</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2><i class="bi bi-folder2 me-2"></i><span th:text="${category.name}">Категория</span></h2>
+                <p class="text-muted mb-0" th:text="${category.description ?: 'Без описания'}">Описание</p>
+            </div>
+            <div sec:authorize="hasAnyRole('MANAGER', 'ADMIN')">
+                <a th:href="@{/categories/edit/{id}(id=${category.id})}" class="btn btn-warning">
+                    <i class="bi bi-pencil me-2"></i>Редактировать
+                </a>
+            </div>
+        </div>
+
+        <p class="mb-4">Товаров в категории: <strong th:text="${products.totalElements}">0</strong></p>
+
+        <!-- Товары -->
+        <div class="row g-4">
+            <div class="col-md-3" th:each="product : ${products}">
+                <div class="card product-card h-100">
+                    <div class="card-img-top">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title" th:text="${product.name}">Товар</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="price-tag" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</span>
+                            <span class="badge" th:classappend="${product.inStock} ? 'bg-success' : 'bg-danger'"
+                                  th:text="${product.inStock} ? 'В наличии' : 'Нет'">Статус</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a th:href="@{/products/view/{id}(id=${product.id})}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="bi bi-eye me-1"></i>Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${products.totalElements == 0}" class="col-12 text-center py-5">
+                <i class="bi bi-box-seam display-1 text-muted mb-3 d-block"></i>
+                <p class="text-muted">В этой категории пока нет товаров</p>
+            </div>
+        </div>
+
+        <!-- Пагинация -->
+        <nav th:if="${products.totalPages > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${products.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/categories/view/{id}(id=${category.id}, page=${products.number - 1})}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}" 
+                    class="page-item" th:classappend="${i == products.number} ? 'active'">
+                    <a class="page-link" th:href="@{/categories/view/{id}(id=${category.id}, page=${i})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${products.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/categories/view/{id}(id=${category.id}, page=${products.number + 1})}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="mt-4">
+            <a th:href="@{/categories}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Назад к категориям
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${supplier.id != null} ? 'Редактирование поставщика' : 'Новый поставщик')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/suppliers}">Поставщики</a></li>
+                        <li class="breadcrumb-item active" th:text="${supplier.id != null} ? 'Редактирование' : 'Новый'">Форма</li>
+                    </ol>
+                </nav>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i class="bi" th:classappend="${supplier.id != null} ? 'bi-pencil' : 'bi-plus-lg'"></i>
+                            <span th:text="${supplier.id != null} ? 'Редактирование поставщика' : 'Новый поставщик'">Форма</span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${error}" class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-circle me-2"></i><span th:text="${error}">Ошибка</span>
+                        </div>
+
+                        <form th:action="${supplier.id != null} ? @{/suppliers/edit/{id}(id=${supplier.id})} : @{/suppliers/new}" 
+                              th:object="${supplier}" method="post">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="companyName" class="form-label">Название компании *</label>
+                                    <input type="text" class="form-control" id="companyName" th:field="*{companyName}"
+                                           th:classappend="${#fields.hasErrors('companyName')} ? 'is-invalid' : ''" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('companyName')}" th:errors="*{companyName}"></div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="contactPerson" class="form-label">Контактное лицо *</label>
+                                    <input type="text" class="form-control" id="contactPerson" th:field="*{contactPerson}"
+                                           th:classappend="${#fields.hasErrors('contactPerson')} ? 'is-invalid' : ''" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('contactPerson')}" th:errors="*{contactPerson}"></div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="phone" class="form-label">Телефон *</label>
+                                    <input type="text" class="form-control" id="phone" th:field="*{phone}"
+                                           th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" th:field="*{email}">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Адрес</label>
+                                <textarea class="form-control" id="address" th:field="*{address}" rows="2"></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="description" class="form-label">Описание</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/suppliers}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>Отмена
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-2"></i>
+                                    <span th:text="${supplier.id != null} ? 'Сохранить' : 'Создать'">Сохранить</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

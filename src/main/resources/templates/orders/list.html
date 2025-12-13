@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Заказы')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold" style="color: #1f2937;"><i class="bi bi-receipt me-2" style="color: #6366f1;"></i>Управление заказами</h2>
+                <p style="color: #6b7280;" class="mb-0">Всего заказов: <span th:text="${orders.totalElements}">0</span></p>
+            </div>
+        </div>
+
+        <!-- Сообщения -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i><span th:text="${success}">Успех</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i><span th:text="${error}">Ошибка</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/orders}" method="get" class="row g-3">
+                    <div class="col-md-5">
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="text" class="form-control" name="search" placeholder="Поиск по номеру или клиенту..."
+                                   th:value="${currentSearch}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="status">
+                            <option value="">Все статусы</option>
+                            <option th:each="st : ${statuses}" th:value="${st.name()}" th:text="${st.displayName}"
+                                    th:selected="${st.name() == currentStatus}">Статус</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" name="sortBy">
+                            <option value="createdAt" th:selected="${currentSortBy == 'createdAt'}">По дате</option>
+                            <option value="totalAmount" th:selected="${currentSortBy == 'totalAmount'}">По сумме</option>
+                            <option value="orderNumber" th:selected="${currentSortBy == 'orderNumber'}">По номеру</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel me-1"></i>Фильтр
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Таблица заказов -->
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>№ заказа</th>
+                                <th>Клиент</th>
+                                <th>Дата</th>
+                                <th>Товаров</th>
+                                <th>Сумма</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order : ${orders}">
+                                <td>
+                                    <a th:href="@{/orders/view/{id}(id=${order.id})}" th:text="${order.orderNumber}" 
+                                       class="fw-semibold text-decoration-none">ORD-123</a>
+                                </td>
+                                <td>
+                                    <div th:text="${order.customer.fullName}">Клиент</div>
+                                    <small class="text-muted" th:text="${order.customer.phone}">Телефон</small>
+                                </td>
+                                <td th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024</td>
+                                <td th:text="${order.totalItemsCount}">0</td>
+                                <td class="fw-bold text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${order.status.name() == 'COMPLETED'} ? 'bg-success' : 
+                                                        (${order.status.name() == 'CANCELLED'} ? 'bg-danger' : 
+                                                        (${order.status.name() == 'PENDING'} ? 'bg-warning' : 
+                                                        (${order.status.name() == 'READY'} ? 'bg-info' : 'bg-primary')))"
+                                          th:text="${order.status.displayName}">Статус</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/orders/view/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> Открыть
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${orders.totalElements == 0}">
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="bi bi-inbox display-4 text-muted d-block mb-3"></i>
+                                    <p class="text-muted">Заказы не найдены</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Пагинация -->
+        <nav th:if="${orders.totalPages > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${orders.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/orders(page=${orders.number - 1}, search=${currentSearch}, status=${currentStatus})}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(0, orders.totalPages - 1)}" 
+                    class="page-item" th:classappend="${i == orders.number} ? 'active'">
+                    <a class="page-link" th:href="@{/orders(page=${i}, search=${currentSearch}, status=${currentStatus})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${orders.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/orders(page=${orders.number + 1}, search=${currentSearch}, status=${currentStatus})}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

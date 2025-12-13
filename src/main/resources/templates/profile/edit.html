@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Редактирование профиля')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="bi bi-pencil me-2"></i>Редактирование профиля</h4>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${error}" class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-circle me-2"></i><span th:text="${error}">Ошибка</span>
+                        </div>
+
+                        <form th:action="@{/profile/edit}" th:object="${user}" method="post">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName" class="form-label">Имя *</label>
+                                    <input type="text" class="form-control" id="firstName" th:field="*{firstName}"
+                                           th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid' : ''" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="form-label">Фамилия *</label>
+                                    <input type="text" class="form-control" id="lastName" th:field="*{lastName}"
+                                           th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid' : ''" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Телефон</label>
+                                <input type="text" class="form-control" id="phone" th:field="*{phone}" 
+                                       placeholder="+7 (999) 000-00-00">
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="address" class="form-label">Адрес доставки</label>
+                                <textarea class="form-control" id="address" th:field="*{address}" rows="2"
+                                          placeholder="Город, улица, дом, квартира"></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/profile}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>Отмена
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-2"></i>Сохранить
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

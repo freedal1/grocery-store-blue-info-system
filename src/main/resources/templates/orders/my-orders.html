@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Мои заказы')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2><i class="bi bi-bag me-2"></i>Мои заказы</h2>
+                <p class="text-muted mb-0">Всего заказов: <span th:text="${orders.totalElements}">0</span></p>
+            </div>
+            <a th:href="@{/orders/new}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-2"></i>Новый заказ
+            </a>
+        </div>
+
+        <!-- Сообщения -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i><span th:text="${success}">Успех</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Заказы -->
+        <div class="row g-4">
+            <div class="col-md-6" th:each="order : ${orders}">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="fw-bold" th:text="${order.orderNumber}">ORD-123</span>
+                        <span class="badge" 
+                              th:classappend="${order.status.name() == 'COMPLETED'} ? 'bg-success' : 
+                                            (${order.status.name() == 'CANCELLED'} ? 'bg-danger' : 
+                                            (${order.status.name() == 'PENDING'} ? 'bg-warning' : 
+                                            (${order.status.name() == 'READY'} ? 'bg-info' : 'bg-primary')))"
+                              th:text="${order.status.displayName}">Статус</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-calendar me-1"></i>
+                            <span th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024</span>
+                        </p>
+                        <p class="mb-2">
+                            <span class="text-muted">Товаров: </span>
+                            <span th:text="${order.totalItemsCount}">0</span>
+                        </p>
+                        <h5 class="text-primary mb-0" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</h5>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a th:href="@{/orders/view/{id}(id=${order.id})}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="bi bi-eye me-2"></i>Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${orders.totalElements == 0}" class="col-12 text-center py-5">
+                <i class="bi bi-bag-x display-1 text-muted mb-3 d-block"></i>
+                <p class="text-muted mb-4">У вас пока нет заказов</p>
+                <a th:href="@{/orders/new}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-2"></i>Создать первый заказ
+                </a>
+            </div>
+        </div>
+
+        <!-- Пагинация -->
+        <nav th:if="${orders.totalPages > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${orders.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/orders/my(page=${orders.number - 1})}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(0, orders.totalPages - 1)}" 
+                    class="page-item" th:classappend="${i == orders.number} ? 'active'">
+                    <a class="page-link" th:href="@{/orders/my(page=${i})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${orders.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/orders/my(page=${orders.number + 1})}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

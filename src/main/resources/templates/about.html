@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('О системе')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="text-center mb-5">
+                    <i class="bi bi-cart4 display-1 mb-3" style="color: #6366f1;"></i>
+                    <h1 class="fw-bold" style="color: #1f2937;">Информационно-справочная система продуктового магазина</h1>
+                    <p class="lead" style="color: #6b7280;">Курсовая работа</p>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0 fw-semibold"><i class="bi bi-info-circle me-2" style="color: #6366f1;"></i>О проекте</h5>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: #6b7280;">Данная система представляет собой веб-приложение для управления продуктовым магазином. 
+                           Система позволяет вести учёт товаров, категорий, поставщиков и заказов.</p>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0 fw-semibold"><i class="bi bi-gear me-2" style="color: #6366f1;"></i>Технологии</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Java 17</strong> - язык программирования</li>
+                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Spring Boot 3.2</strong> - фреймворк для создания веб-приложений</li>
+                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Spring Security</strong> - аутентификация и авторизация</li>
+                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Spring Data JPA + Hibernate</strong> - работа с базой данных (ORM)</li>
+                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>H2 / PostgreSQL</strong> - база данных</li>
+                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Thymeleaf</strong> - шаблонизатор для веб-страниц</li>
+                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Bootstrap 5</strong> - CSS фреймворк</li>
+                            <li><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Maven</strong> - система сборки</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0 fw-semibold"><i class="bi bi-list-check me-2" style="color: #6366f1;"></i>Функциональность</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Регистрация и авторизация пользователей</li>
+                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Разделение ролей (Покупатель, Продавец, Менеджер, Администратор)</li>
+                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>CRUD операции для товаров, категорий, поставщиков</li>
+                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Управление заказами с различными статусами</li>
+                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Поиск и фильтрация данных</li>
+                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Сортировка записей по различным критериям</li>
+                            <li><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Административная панель для управления пользователями</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a th:href="@{/}" class="btn btn-primary">
+                        <i class="bi bi-house me-2"></i>На главную
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

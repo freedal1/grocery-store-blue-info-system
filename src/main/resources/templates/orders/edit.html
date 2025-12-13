@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Редактирование заказа')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <!-- Сообщения -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i><span th:text="${success}">Успех</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i><span th:text="${error}">Ошибка</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row">
+            <!-- Товары в заказе -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="bi bi-cart me-2"></i>Заказ <span th:text="${order.orderNumber}">ORD-123</span></h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive" th:if="${#lists.size(order.items) > 0}">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Товар</th>
+                                        <th>Цена</th>
+                                        <th>Кол-во</th>
+                                        <th>Сумма</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="item : ${order.items}">
+                                        <td th:text="${item.product.name}">Товар</td>
+                                        <td th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</td>
+                                        <td th:text="${item.quantity}">0</td>
+                                        <td class="fw-bold" th:text="${#numbers.formatDecimal(item.subtotal, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</td>
+                                        <td>
+                                            <form th:action="@{/orders/{orderId}/remove-item/{itemId}(orderId=${order.id}, itemId=${item.id})}" method="post">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-light">
+                                        <td colspan="3" class="text-end fw-bold">Итого:</td>
+                                        <td class="fw-bold text-primary fs-5" 
+                                            th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div th:if="${#lists.isEmpty(order.items)}" class="text-center py-4 text-muted">
+                            <i class="bi bi-cart-x display-4 mb-3 d-block"></i>
+                            <p>Корзина пуста. Добавьте товары из списка справа.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Адрес доставки -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-geo-alt me-2"></i>Адрес доставки
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/orders/{id}/update-address(id=${order.id})}" method="post">
+                            <div class="mb-3">
+                                <textarea class="form-control" name="address" rows="2" 
+                                          th:text="${order.deliveryAddress}" placeholder="Введите адрес доставки"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-check-lg me-1"></i>Сохранить адрес
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Добавление товаров -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-plus-circle me-2"></i>Добавить товар
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/orders/{id}/add-item(id=${order.id})}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Выберите товар</label>
+                                <select class="form-select" name="productId" required>
+                                    <option value="">-- Выберите товар --</option>
+                                    <option th:each="product : ${products}" 
+                                            th:value="${product.id}" 
+                                            th:text="${product.name} + ' - ' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')} + ' ₽'"
+                                            th:disabled="${!product.inStock}">Товар</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Количество</label>
+                                <input type="number" class="form-control" name="quantity" min="1" value="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-lg me-2"></i>Добавить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Оформление -->
+                <div class="card mt-4" th:if="${#lists.size(order.items) > 0}">
+                    <div class="card-body text-center">
+                        <h5 class="mb-3">Итого: 
+                            <span class="text-primary" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</span>
+                        </h5>
+                        <form th:action="@{/orders/{id}/submit(id=${order.id})}" method="post">
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                <i class="bi bi-check-circle me-2"></i>Оформить заказ
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <a th:href="@{/orders/my}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Мои заказы
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

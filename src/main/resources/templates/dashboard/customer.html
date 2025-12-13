@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Личный кабинет')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <!-- Приветствие -->
+        <div class="page-header mb-4">
+            <h1 class="fw-bold" style="color: #1f2937;"><i class="bi bi-person-circle me-3" style="color: #6366f1;"></i>Добро пожаловать, <span th:text="${user.firstName}">Пользователь</span>!</h1>
+            <p class="mb-0" style="color: #6b7280;">Это ваш личный кабинет покупателя</p>
+        </div>
+
+        <!-- Быстрые действия -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <a th:href="@{/products}" class="text-decoration-none">
+                    <div class="stat-card">
+                        <i class="bi bi-box-seam stat-icon"></i>
+                        <div class="stat-label">Каталог товаров</div>
+                        <p class="text-muted small mb-0">Просмотр и поиск товаров</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a th:href="@{/orders/new}" class="text-decoration-none">
+                    <div class="stat-card">
+                        <i class="bi bi-cart-plus stat-icon"></i>
+                        <div class="stat-label">Новый заказ</div>
+                        <p class="text-muted small mb-0">Оформить заказ</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a th:href="@{/orders/my}" class="text-decoration-none">
+                    <div class="stat-card">
+                        <i class="bi bi-bag stat-icon"></i>
+                        <div class="stat-label">Мои заказы</div>
+                        <p class="text-muted small mb-0">История и статусы заказов</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Категории -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-tags me-2"></i>Категории товаров</span>
+                        <a th:href="@{/categories}" class="btn btn-sm btn-light">Все категории</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-6 col-md-4" th:each="category : ${categories}" th:if="${#lists.size(categories) > 0}">
+                                <a th:href="@{/categories/view/{id}(id=${category.id})}" class="text-decoration-none">
+                                    <div class="card h-100 text-center p-3 border-0 bg-light">
+                                        <i class="bi bi-folder2 display-6 text-primary mb-2"></i>
+                                        <h6 class="mb-1" th:text="${category.name}">Категория</h6>
+                                        <small class="text-muted" th:text="${category.productCount} + ' товаров'">0 товаров</small>
+                                    </div>
+                                </a>
+                            </div>
+                            <div th:if="${#lists.isEmpty(categories)}" class="col-12 text-center text-muted py-4">
+                                <i class="bi bi-folder-x display-4 mb-3 d-block"></i>
+                                Категории пока не добавлены
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Последние заказы -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-clock-history me-2"></i>Мои последние заказы
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush" th:if="${#lists.size(myOrders) > 0}">
+                            <a th:each="order : ${myOrders}" 
+                               th:href="@{/orders/view/{id}(id=${order.id})}"
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1" th:text="${order.orderNumber}">ORD-123</h6>
+                                        <small class="text-muted" th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge" 
+                                              th:classappend="${order.status.name() == 'COMPLETED'} ? 'bg-success' : 
+                                                            (${order.status.name() == 'CANCELLED'} ? 'bg-danger' : 
+                                                            (${order.status.name() == 'PENDING'} ? 'bg-warning' : 'bg-info'))"
+                                              th:text="${order.status.displayName}">Статус</span>
+                                        <div class="fw-bold text-primary mt-1" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div th:if="${#lists.isEmpty(myOrders)}" class="text-center text-muted py-4">
+                            <i class="bi bi-bag-x display-4 mb-3 d-block"></i>
+                            <p>У вас пока нет заказов</p>
+                            <a th:href="@{/orders/new}" class="btn btn-primary btn-sm">Создать заказ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Рекомендуемые товары -->
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-star me-2"></i>Популярные товары</span>
+                <a th:href="@{/products}" class="btn btn-sm btn-light">Все товары</a>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-6 col-md-3" th:each="product : ${featuredProducts}" th:if="${#lists.size(featuredProducts) > 0}">
+                        <div class="card product-card h-100">
+                            <div class="card-img-top">
+                                <i class="bi bi-box-seam"></i>
+                            </div>
+                            <div class="card-body">
+                                <h6 class="card-title" th:text="${product.name}">Товар</h6>
+                                <p class="card-text small text-muted" th:text="${product.category?.name}">Категория</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price-tag" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</span>
+                                    <span class="badge stock-badge" 
+                                          th:classappend="${product.inStock} ? 'bg-success' : 'bg-danger'"
+                                          th:text="${product.inStock} ? 'В наличии' : 'Нет в наличии'">Статус</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <a th:href="@{/products/view/{id}(id=${product.id})}" class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="bi bi-eye me-1"></i>Подробнее
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

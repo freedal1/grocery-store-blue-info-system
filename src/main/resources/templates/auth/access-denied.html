@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Доступ запрещен')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 d-flex align-items-center">
+    <div class="container text-center py-5">
+        <div class="card mx-auto" style="max-width: 500px;">
+            <div class="card-body p-5">
+                <i class="bi bi-shield-x display-1 mb-4" style="color: #ef4444;"></i>
+                <h1 class="display-4 fw-bold mb-3" style="color: #ef4444;">403</h1>
+                <h2 class="mb-4 fw-semibold" style="color: #1f2937;">Доступ запрещен</h2>
+                <p class="lead mb-4" style="color: #6b7280;">У вас недостаточно прав для просмотра данной страницы.</p>
+                <a th:href="@{/dashboard}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-house me-2"></i>Вернуться на главную
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

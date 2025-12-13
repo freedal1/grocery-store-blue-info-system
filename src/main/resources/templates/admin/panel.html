@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Администрирование')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <div class="page-header mb-4" style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);">
+            <h1><i class="bi bi-shield-lock me-3"></i>Администрирование</h1>
+            <p class="mb-0">Управление системой и пользователями</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-danger text-white">
+                        <i class="bi bi-people me-2"></i>Пользователи
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center mb-3">
+                            <div class="col">
+                                <h3 th:text="${totalUsers}">0</h3>
+                                <small class="text-muted">Всего</small>
+                            </div>
+                            <div class="col">
+                                <h3 class="text-success" th:text="${customerCount}">0</h3>
+                                <small class="text-muted">Покупатели</small>
+                            </div>
+                            <div class="col">
+                                <h3 class="text-primary" th:text="${sellerCount}">0</h3>
+                                <small class="text-muted">Продавцы</small>
+                            </div>
+                        </div>
+                        <div class="row text-center mb-3">
+                            <div class="col">
+                                <h3 class="text-warning" th:text="${managerCount}">0</h3>
+                                <small class="text-muted">Менеджеры</small>
+                            </div>
+                            <div class="col">
+                                <h3 class="text-danger" th:text="${adminCount}">0</h3>
+                                <small class="text-muted">Админы</small>
+                            </div>
+                        </div>
+                        <a th:href="@{/admin/users}" class="btn btn-danger w-100">
+                            <i class="bi bi-gear me-2"></i>Управление пользователями
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <i class="bi bi-speedometer2 me-2"></i>Быстрый доступ
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/products}" class="btn btn-outline-primary">
+                                <i class="bi bi-box-seam me-2"></i>Управление товарами
+                            </a>
+                            <a th:href="@{/categories}" class="btn btn-outline-primary">
+                                <i class="bi bi-tags me-2"></i>Управление категориями
+                            </a>
+                            <a th:href="@{/suppliers}" class="btn btn-outline-primary">
+                                <i class="bi bi-truck me-2"></i>Управление поставщиками
+                            </a>
+                            <a th:href="@{/orders}" class="btn btn-outline-primary">
+                                <i class="bi bi-receipt me-2"></i>Управление заказами
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Регистрация')}"></head>
+<body class="d-flex flex-column min-vh-100" style="background-color: #f9fafb;">
+
+<div class="container flex-grow-1 d-flex align-items-center justify-content-center py-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-plus display-4 mb-3" style="color: #6366f1;"></i>
+                    <h2 class="mt-2 fw-bold" style="color: #1f2937;">Регистрация</h2>
+                    <p style="color: #6b7280;">Создайте аккаунт для работы с системой магазина.</p>
+                </div>
+
+                <!-- Общая ошибка регистрации -->
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    <span th:text="${error}">Произошла ошибка при регистрации</span>
+                </div>
+
+                <form th:action="@{/register}" th:object="${user}" method="post">
+                    <div class="row">
+                        <!-- Имя -->
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label fw-semibold">Имя *</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="firstName"
+                                   th:field="*{firstName}"
+                                   th:classappend="${#fields.hasErrors('firstName')} ? 'is-invalid' : ''"
+                                   placeholder="Введите имя"
+                                   required>
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('firstName')}"
+                                 th:errors="*{firstName}"></div>
+                        </div>
+
+                        <!-- Фамилия -->
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label fw-semibold">Фамилия *</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="lastName"
+                                   th:field="*{lastName}"
+                                   th:classappend="${#fields.hasErrors('lastName')} ? 'is-invalid' : ''"
+                                   placeholder="Введите фамилию"
+                                   required>
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('lastName')}"
+                                 th:errors="*{lastName}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Имя пользователя (логин) -->
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-semibold">Имя пользователя *</label>
+                        <input type="text"
+                               class="form-control"
+                               id="username"
+                               th:field="*{username}"
+                               th:classappend="${#fields.hasErrors('username') or (usernameError != null)} ? 'is-invalid' : ''"
+                               placeholder="От 3 до 50 символов"
+                               required>
+                        <div class="invalid-feedback"
+                             th:if="${#fields.hasErrors('username')}"
+                             th:errors="*{username}"></div>
+                        <div class="invalid-feedback"
+                             th:if="${usernameError}"
+                             th:text="${usernameError}"></div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Email *</label>
+                        <input type="email"
+                               class="form-control"
+                               id="email"
+                               th:field="*{email}"
+                               th:classappend="${#fields.hasErrors('email') or (emailError != null)} ? 'is-invalid' : ''"
+                               placeholder="example@mail.com"
+                               required>
+                        <div class="invalid-feedback"
+                             th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}"></div>
+                        <div class="invalid-feedback"
+                             th:if="${emailError}"
+                             th:text="${emailError}"></div>
+                    </div>
+
+                    <!-- Телефон -->
+                    <div class="mb-3">
+                        <label for="phone" class="form-label fw-semibold">Телефон</label>
+                        <input type="text"
+                               class="form-control"
+                               id="phone"
+                               th:field="*{phone}"
+                               placeholder="+7 (999) 000-00-00">
+                    </div>
+
+                    <!-- Адрес -->
+                    <div class="mb-3">
+                        <label for="address" class="form-label fw-semibold">Адрес</label>
+                        <textarea class="form-control"
+                                  id="address"
+                                  th:field="*{address}"
+                                  rows="2"
+                                  placeholder="Город, улица, дом, квартира"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <!-- Пароль -->
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label fw-semibold">Пароль *</label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="password"
+                                   th:field="*{password}"
+                                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                                   placeholder="Минимум 4 символа"
+                                   required>
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('password')}"
+                                 th:errors="*{password}"></div>
+                        </div>
+
+                        <!-- Подтверждение пароля -->
+                        <div class="col-md-6 mb-3">
+                            <label for="confirmPassword" class="form-label fw-semibold">Подтверждение пароля *</label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="confirmPassword"
+                                   name="confirmPassword"
+                                   th:classappend="${passwordError != null} ? 'is-invalid' : ''"
+                                   placeholder="Повторите пароль"
+                                   required>
+                            <div class="invalid-feedback"
+                                 th:if="${passwordError}"
+                                 th:text="${passwordError}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопка регистрации -->
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                        <i class="bi bi-person-plus me-2"></i>Зарегистрироваться
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <span class="text-muted">Уже есть аккаунт?</span>
+                    <a th:href="@{/login}" class="text-decoration-none fw-semibold"> Войти</a>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <a th:href="@{/}" class="text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i>Вернуться на главную
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

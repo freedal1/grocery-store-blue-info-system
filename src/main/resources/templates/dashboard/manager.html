@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Панель менеджера')}"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="flex-grow-1 py-4">
+    <div class="container">
+        <!-- Заголовок -->
+        <div class="page-header mb-4">
+            <h1 class="fw-bold" style="color: #1f2937;"><i class="bi bi-briefcase me-3" style="color: #6366f1;"></i>Панель менеджера</h1>
+            <p class="mb-0" style="color: #6b7280;">Управление товарами, категориями и поставщиками</p>
+        </div>
+
+        <!-- Основная статистика -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card bg-primary bg-opacity-10">
+                    <i class="bi bi-box-seam stat-icon text-primary"></i>
+                    <div class="stat-value" th:text="${totalProducts}">0</div>
+                    <div class="stat-label">Товаров</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card bg-info bg-opacity-10">
+                    <i class="bi bi-tags stat-icon text-info"></i>
+                    <div class="stat-value" th:text="${totalCategories}">0</div>
+                    <div class="stat-label">Категорий</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card bg-warning bg-opacity-10">
+                    <i class="bi bi-truck stat-icon text-warning"></i>
+                    <div class="stat-value" th:text="${totalSuppliers}">0</div>
+                    <div class="stat-label">Поставщиков</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card bg-success bg-opacity-10">
+                    <i class="bi bi-receipt stat-icon text-success"></i>
+                    <div class="stat-value" th:text="${totalOrders}">0</div>
+                    <div class="stat-label">Заказов</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Финансовая статистика -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center py-4">
+                        <i class="bi bi-currency-dollar display-4 text-success mb-2"></i>
+                        <h3 class="fw-bold" th:text="${#numbers.formatDecimal(monthlyRevenue, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</h3>
+                        <p class="text-muted mb-0">Выручка за текущий месяц</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center py-4">
+                        <i class="bi bi-archive display-4 text-primary mb-2"></i>
+                        <h3 class="fw-bold" th:text="${#numbers.formatDecimal(inventoryValue, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</h3>
+                        <p class="text-muted mb-0">Общая стоимость товаров на складе</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Управление -->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-plus-circle me-2"></i>Управление
+                    </div>
+                    <div class="card-body">
+                        <a th:href="@{/products/new}" class="btn btn-primary w-100 mb-2">
+                            <i class="bi bi-plus-lg me-2"></i>Добавить товар
+                        </a>
+                        <a th:href="@{/categories/new}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="bi bi-plus-lg me-2"></i>Добавить категорию
+                        </a>
+                        <a th:href="@{/suppliers/new}" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-plus-lg me-2"></i>Добавить поставщика
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Заказы статистика -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-graph-up me-2"></i>Статус заказов
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>Ожидают обработки</span>
+                            <span class="badge bg-warning" th:text="${pendingOrders}">0</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>В обработке</span>
+                            <span class="badge bg-info" th:text="${processingOrders}">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Предупреждения по товарам -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header" style="background-color: #fef3c7; color: #92400e;">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Требуют внимания
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="border rounded p-3 text-center">
+                                    <i class="bi bi-battery-low display-6 text-warning"></i>
+                                    <h4 th:text="${#lists.size(lowStockProducts)}">0</h4>
+                                    <small class="text-muted">Заканчиваются</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-3 text-center">
+                                    <i class="bi bi-x-circle display-6 text-danger"></i>
+                                    <h4 th:text="${#lists.size(outOfStockProducts)}">0</h4>
+                                    <small class="text-muted">Нет в наличии</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-3 text-center">
+                                    <i class="bi bi-calendar-x display-6 text-danger"></i>
+                                    <h4 th:text="${#lists.size(expiringSoonProducts)}">0</h4>
+                                    <small class="text-muted">Истекает срок</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Товары с низким остатком -->
+                <div class="card" th:if="${#lists.size(lowStockProducts) > 0}">
+                    <div class="card-header">
+                        <i class="bi bi-battery-low me-2"></i>Товары с низким остатком
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Товар</th>
+                                        <th>Категория</th>
+                                        <th>Остаток</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="product, iter : ${lowStockProducts}" th:if="${iter.index < 5}">
+                                        <td th:text="${product.name}">Товар</td>
+                                        <td th:text="${product.category?.name ?: '-'}">Категория</td>
+                                        <td>
+                                            <span class="badge bg-warning" th:text="${product.quantity} + ' ' + ${product.unit}">0</span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Последние заказы -->
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock-history me-2"></i>Последние заказы</span>
+                <a th:href="@{/orders}" class="btn btn-sm btn-light">Все заказы</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>№ заказа</th>
+                                <th>Клиент</th>
+                                <th>Дата</th>
+                                <th>Сумма</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="order : ${recentOrders}">
+                                <td th:text="${order.orderNumber}">ORD-123</td>
+                                <td th:text="${order.customer.fullName}">Клиент</td>
+                                <td th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">01.01.2024</td>
+                                <td class="fw-bold" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 2, 'POINT')} + ' ₽'">0 ₽</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${order.status.name() == 'COMPLETED'} ? 'bg-success' : 
+                                                        (${order.status.name() == 'CANCELLED'} ? 'bg-danger' : 
+                                                        (${order.status.name() == 'PENDING'} ? 'bg-warning' : 'bg-info'))"
+                                          th:text="${order.status.displayName}">Статус</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/orders/view/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
+
+
