@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('О системе')}"></head>
+<head th:replace="~{fragments/layout :: head('Об авторе')}"></head>
 <body class="d-flex flex-column min-vh-100">
 
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
@@ -10,59 +10,74 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="text-center mb-5">
-                    <i class="bi bi-cart4 display-1 mb-3" style="color: #6366f1;"></i>
-                    <h1 class="fw-bold" style="color: #1f2937;">Информационно-справочная система продуктового магазина</h1>
-                    <p class="lead" style="color: #6b7280;">Курсовая работа</p>
+                    <i class="bi bi-person-badge display-1 mb-3" style="color: #6366f1;"></i>
+                    <h1 class="fw-bold" style="color: #1f2937;">Об авторе проекта</h1>
+                    <p class="lead" style="color: #6b7280;">
+                        Информация об авторе и его опыте работы с технологиями,
+                        использованными при разработке информационной системы
+                    </p>
                 </div>
 
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0 fw-semibold"><i class="bi bi-info-circle me-2" style="color: #6366f1;"></i>О проекте</h5>
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-person-lines-fill me-2" style="color: #6366f1;"></i>
+                            Основная информация
+                        </h5>
                     </div>
-                    <div class="card-body">
-                        <p style="color: #6b7280;">Данная система представляет собой веб-приложение для управления продуктовым магазином. 
-                           Система позволяет вести учёт товаров, категорий, поставщиков и заказов.</p>
+                    <div class="card-body" style="color: #4b5563;">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">ФИО автора</dt>
+                            <dd class="col-sm-8">Матевосов Игорь Сергеевич</dd>
+
+                            <dt class="col-sm-4">Группа / учебное заведение</dt>
+                            <dd class="col-sm-8">ИД23-3, Финансовый университет при Правительстве РФ</dd>
+
+                            <dt class="col-sm-4">Контактные данные</dt>
+                            <dd class="col-sm-8">
+                                <a href="https://t.me/freedall" target="_blank" rel="noopener noreferrer">
+                                    https://t.me/freedall
+                                </a>
+                            </dd>
+
+                            <dt class="col-sm-4">Период работы над проектом</dt>
+                            <dd class="col-sm-8">01.11.2025 – 10.12.2025</dd>
+                        </dl>
                     </div>
                 </div>
 
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0 fw-semibold"><i class="bi bi-gear me-2" style="color: #6366f1;"></i>Технологии</h5>
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="bi bi-code-slash me-2" style="color: #6366f1;"></i>
+                            Опыт работы с технологиями проекта
+                        </h5>
                     </div>
-                    <div class="card-body">
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Java 17</strong> - язык программирования</li>
-                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Spring Boot 3.2</strong> - фреймворк для создания веб-приложений</li>
-                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Spring Security</strong> - аутентификация и авторизация</li>
-                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Spring Data JPA + Hibernate</strong> - работа с базой данных (ORM)</li>
-                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>H2 / PostgreSQL</strong> - база данных</li>
-                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Thymeleaf</strong> - шаблонизатор для веб-страниц</li>
-                            <li class="mb-2"><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Bootstrap 5</strong> - CSS фреймворк</li>
-                            <li><i class="bi bi-check-circle me-2" style="color: #10b981;"></i><strong>Maven</strong> - система сборки</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0 fw-semibold"><i class="bi bi-list-check me-2" style="color: #6366f1;"></i>Функциональность</h5>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Регистрация и авторизация пользователей</li>
-                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Разделение ролей (Покупатель, Продавец, Менеджер, Администратор)</li>
-                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>CRUD операции для товаров, категорий, поставщиков</li>
-                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Управление заказами с различными статусами</li>
-                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Поиск и фильтрация данных</li>
-                            <li class="mb-2"><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Сортировка записей по различным критериям</li>
-                            <li><i class="bi bi-check2 me-2" style="color: #6366f1;"></i>Административная панель для управления пользователями</li>
-                        </ul>
+                    <div class="card-body" style="color: #4b5563;">
+                        <p class="mb-3">
+                            В рамках разработки проекта автор получил практический опыт создания
+                            веб‑приложения на платформе <strong>Java 17</strong> с использованием
+                            <strong>Spring Boot 3.2</strong>, а также модулей <strong>Spring Security</strong>
+                            и <strong>Spring Data JPA</strong> с <strong>Hibernate</strong> для доступа к данным.
+                        </p>
+                        <p class="mb-3">
+                            При реализации пользовательского интерфейса были использованы шаблоны
+                            <strong>Thymeleaf</strong> и фреймворк <strong>Bootstrap 5</strong>, что позволило
+                            создать современный адаптивный дизайн. Для хранения данных применялись СУБД
+                            <strong>H2</strong> и <strong>PostgreSQL</strong>, а управление зависимостями и
+                            сборкой проекта выполнялось с помощью <strong>Maven</strong>.
+                        </p>
+                        <p class="mb-0">
+                            Проект позволил закрепить навыки проектирования архитектуры многослойного приложения,
+                            настройки безопасности, работы с реляционными базами данных и построения удобного
+                            интерфейса для различных ролей пользователей информационной системы продуктового магазина.
+                        </p>
                     </div>
                 </div>
 
                 <div class="text-center">
                     <a th:href="@{/}" class="btn btn-primary">
-                        <i class="bi bi-house me-2"></i>На главную
+                        <i class="bi bi-house me-2"></i>На главную страницу
                     </a>
                 </div>
             </div>
@@ -74,5 +89,3 @@
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 </html>
-
-
